@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Управление задачами";
+}
+
+
+<h1>Управление задачами</h1>
+
+
+<div class="row">
+    @foreach (var status in ViewBag.Statuses)
+    {
+        
+ <div class="col">
+            <h3>@status.Statusname</h3>
+            @foreach (var task in ((IEnumerable<TaskFlow.Task>)ViewBag.Tasks).Where(t => t.Statusid == status.Statusid))
+            {
+                <div>
+                    <h4>@task.Title</h4>
+                </div>
+            }
+       
+        </div>
+    }
+</div>

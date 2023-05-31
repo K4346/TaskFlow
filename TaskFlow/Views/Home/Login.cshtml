@@ -1,0 +1,83 @@
+@page
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="user-info" style="text-align: center;">
+        <p>Вы вошли как: <span id="userName">@User.Identity.Name</span></p>
+        <button id="loginCurrentUser">Войти текущим пользователем</button>
+        <button id="logout">Разлогиниться</button>
+    </div>
+
+    <script>
+
+        async function logoutAsync() {
+            console.log("1");
+            const token = document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+            const response = await fetch("/logout", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            location.reload();
+            
+        }
+        document.getElementById("loginCurrentUser").addEventListener("click", function () {
+            window.location.href = "/Home/Index";
+        });
+
+        // Обработчик события нажатия на кнопку "Разлогиниться"
+        document.getElementById("logout").addEventListener("click", function () {
+            logoutAsync()
+        });
+    </script>
+}
+else
+{
+    <div style="text-align: center;">
+        <div id="loginForm">
+            <h3>Вход на сайт</h3>
+            <label>Введите логин</label><br />
+            <input type="email" id="emailLogin" /> <br /><br />
+            <label>Введите пароль</label><br />
+            <input type="password" id="passwordLogin" /><br /><br />
+            <input type="submit" id="submitLogin" value="Логин" />
+        </div>
+    </div>
+    <script>
+
+        // отпавка запроса к контроллеру AccountController для получения токена
+        async function getTokenAsync() {
+
+            // получаем данные формы и фомируем объект для отправки
+            const formData = new FormData();
+            formData.append("grant_type", "password");
+            formData.append("username", document.getElementById("emailLogin").value);
+            formData.append("password", document.getElementById("passwordLogin").value);
+
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/token", {
+                method: "POST",
+                headers: { "Accept": "application/json" },
+                body: formData
+            });
+            // получаем данные
+            const data = await response.json();
+
+            console.log(data);
+
+            if (response.ok === true) {
+                if (data.redirectTo) {
+                    window.location.href = data.redirectTo;
+                }
+            }
+        };
+
+        document.getElementById("submitLogin").addEventListener("click", e => {
+            e.preventDefault();
+            getTokenAsync();
+        });
+
+    </script>
+}
+
