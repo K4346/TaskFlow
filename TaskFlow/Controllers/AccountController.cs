@@ -30,20 +30,13 @@ namespace UniversitiesMVC.Controllers
         [HttpPost("/token")]
         public IActionResult Token(string username, string password)
         {
-            //if (username == null || password == null || !IsBase64String(username) || !IsBase64String(password)) {
-            //    //todo
-            //    Console.WriteLine(username);
-            //    Console.WriteLine(IsBase64String(username));
-            //    return Unauthorized(new { errorText = "Inputs have invalid characters" });
 
-            //}
-            // protect the payload
             string protectedLogin = _protector.Protect(username);
             Console.WriteLine($"login - Protect returned: {protectedLogin}");
             string protectedPassword = _protector.Protect(password);
             Console.WriteLine($"password - Protect returned: {protectedPassword}");
 
-            // unprotect the payload
+
             string unprotectedLogin = _protector.Unprotect(protectedLogin);
             Console.WriteLine($"login - Unprotect returned: {unprotectedLogin}");   
             string unprotectedPassword = _protector.Unprotect(protectedPassword);
@@ -83,6 +76,7 @@ namespace UniversitiesMVC.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, Decrypt(person.Username)),
+                     new Claim("UserId", person.Userid.ToString()),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role.Rolename)
                 };
                 ClaimsIdentity claimsIdentity =

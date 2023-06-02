@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewData["Title"] = "Детали задачи";
+}
+
+@model TaskFlow.Task
+
+<h1>Детали задачи</h1>
+
+<h2>@Model.Title</h2>
+@if (@Model.Description != null)
+{
+    <p>Описание задачи: @Model.Description</p>
+}
+
+@if (@Model.Status != null)
+{
+    <p>Статус: @Model.Status.Statusname</p>
+}
+@if (@Model.PriorityNavigation != null)
+{
+    <p>Приоритет: @Model.PriorityNavigation.Priorityname</p>
+}
+@if (@Model.AssignedtoNavigation != null)
+{
+    <p>Назначено на:  @ViewBag.User.Username</p>
+}
+@if (@Model.Category != null)
+{
+    <p>Категория: @Model.Category.Categoryname</p>
+}
+
+@if (@Model.Createdat != null)
+{
+    <p>Дата создания задачи: @Model.Createdat</p>
+}
+@if (@Model.Deadline != null)
+{
+    <p>Срок: @Model.Deadline</p>
+}

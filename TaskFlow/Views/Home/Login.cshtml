@@ -26,7 +26,6 @@
             window.location.href = "/Home/Index";
         });
 
-        // Обработчик события нажатия на кнопку "Разлогиниться"
         document.getElementById("logout").addEventListener("click", function () {
             logoutAsync()
         });
@@ -46,10 +45,8 @@ else
     </div>
     <script>
 
-        // отпавка запроса к контроллеру AccountController для получения токена
         async function getTokenAsync() {
 
-            // получаем данные формы и фомируем объект для отправки
             const formData = new FormData();
             formData.append("grant_type", "password");
             formData.append("username", document.getElementById("emailLogin").value);

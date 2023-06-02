@@ -22,22 +22,62 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (User.IsInRole("Analyst"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TasksManager">TasksManager</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="user-info" style="text-align: center;">
+
+            <p>Вы вошли как: @User.Identity.Name</p>
+            @if (User.IsInRole("Analyst"))
+            {
+                <p>Роль: Аналитик</p>
+            }
+            else
+            {
+                <p>Роль: Пользователь</p>
+            }
+            <button id="logout">Разлогиниться</button>
+        </div>
+    }
+
+
+    <script>
+
+        async function logoutAsync() {
+            console.log("1");
+            const token = document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+            const response = await fetch("/logout", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            location.reload();
+
+        }
+
+        document.getElementById("logout").addEventListener("click", function () {
+            logoutAsync()
+        });
+    </script>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - TaskFlow - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

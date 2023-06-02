@@ -1,0 +1,243 @@
+﻿
+@{
+    ViewData["Title"] = "Управление задачами";
+}
+
+<h1>Управление задачами</h1>
+<br />
+<br />
+
+<table>
+    <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Приоритет</th>
+            <th>Исполнитель</th>
+            <th>Категория</th>
+            <th>Дата создания</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>
+                    <input type="text" name="Title" value="@task.Title" />
+                </td>
+                <td>
+                    <textarea name="Description">@task.Description</textarea>
+                </td>
+                <td>
+                  <select name="Statusid">
+                    @foreach (var status in ViewBag.Statuses)
+                    {
+                    <option value="@status.Statusid" selected="@(status.Statusid == task.Statusid)">@status.Statusname</option>
+                    }
+                </select>
+
+                </td>
+                <td>
+                    <select name="Priorityid">
+                        @foreach (var priority in ViewBag.Priorities)
+                        {
+                            <option value="@priority.Priorityid" selected="@(priority.Priorityid == task.Priority)">@priority.Priorityname</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select name="UserId">
+                        @foreach (var user in ViewBag.Users)
+                        {
+                            <option value="@user.Userid" selected="@(user.Userid == task.Assignedto)">@user.Username</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select name="CategoryId">
+                        @foreach (var category in ViewBag.Сategories)
+                        {
+                            <option value="@category.Categoryid" selected="@(category.Categoryid == task.Categoryid)">@category.Categoryname</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    @task.Createdat.ToString("dd.MM.yyyy")
+                </td>
+                <td>
+                    <button class="btn-save" data-task-id="@task.Taskid">Сохранить</button>
+                </td>
+                <td>
+                    <button class="btn-delete" data-task-id="@task.Taskid">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-save').click(function () {
+                var taskId = $(this).data('task-id');
+                var title = $(this).closest('tr').find('input[name="Title"]').val();
+                var description = $(this).closest('tr').find('textarea[name="Description"]').val();
+                var statusId = $(this).closest('tr').find('select[name="Statusid"]').val();
+                var priorityId = $(this).closest('tr').find('select[name="Priorityid"]').val();
+                var UserId = $(this).closest('tr').find('select[name="UserId"]').val();
+                var CategoryId = $(this).closest('tr').find('select[name="CategoryId"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("SaveTask", "Home")',
+                    type: 'POST',
+                    data: {
+                        taskId: taskId,
+                        title: title,
+                        description: description,
+                        statusId: statusId,
+                        priorityId: priorityId,
+                        UserId: UserId,
+                        CategoryId: CategoryId
+                    },
+                    success: function (result) {
+                        location.reload()
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Произошла ошибка:', error);
+                    }
+                });
+            });
+        });
+        $(document).ready(function () {
+            $('.btn-delete').click(function () {
+                var taskId = $(this).data('task-id');
+
+                $.ajax({
+                    url: '@Url.Action("DeleteTask", "Home")',
+                    type: 'POST',
+                    data: {
+                        taskId: taskId,
+                    },
+                    success: function (result) {
+                        location.reload()
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Произошла ошибка:', error);
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $('.btn-create').click(function () {
+
+                var title = $(this).closest('tr').find('input[name="Title"]').val();
+                var description = $(this).closest('tr').find('textarea[name="Description"]').val();
+                var statusId = $(this).closest('tr').find('select[name="Statusid"]').val();
+                var priorityId = $(this).closest('tr').find('select[name="Priorityid"]').val();
+                var UserId = $(this).closest('tr').find('select[name="UserId"]').val();
+                var CategoryId = $(this).closest('tr').find('select[name="CategoryId"]').val();
+
+
+                $.ajax({
+                    url: '@Url.Action("CreateTask", "Home")',
+                    type: 'POST',
+                    data: {
+
+                        title: title,
+                        description: description,
+                        statusId: statusId,
+                        priorityId: priorityId,
+                        UserId: UserId,
+                        CategoryId: CategoryId
+                    },
+                    success: function (result) {
+                        location.reload()
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Произошла ошибка:', error);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<br />
+<br />
+<h2>Добавить задачу</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Приоритет</th>
+            <th>Исполнитель</th>
+            <th>Категория</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr>
+                <td>
+                    <input type="text" name="Title" value="" />
+                </td>
+                <td>
+                    <textarea name="Description"></textarea>
+                </td>
+                <td>
+                    <select name="Statusid">
+                        @foreach (var status in ViewBag.Statuses)
+                        {
+                            <option value="@status.Statusid" >@status.Statusname</option>
+                        }
+                    </select>
+
+                </td>
+                <td>
+                    <select name="Priorityid">
+                        @foreach (var priority in ViewBag.Priorities)
+                        {
+                            <option value="@priority.Priorityid">@priority.Priorityname</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select name="UserId">
+                        @foreach (var user in ViewBag.Users)
+                        {
+                            <option value="@user.Userid" >@user.Username</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select name="CategoryId">
+                        @foreach (var category in ViewBag.Сategories)
+                        {
+                            <option value="@category.Categoryid">@category.Categoryname</option>
+                        }
+                    </select>
+                </td>
+
+                @*                <td>
+            @if (task.Deadline!=null)
+            {
+            <input type="date" name="Deadline" value="@task.Deadline.Value.ToString("yyyy-MM-dd")" />
+            }
+            else
+            {
+            <input type="date" name="Deadline" />
+            }
+            </td>*@
+                <td>
+                    <button class="btn-create">Сохранить</button>
+                </td>
+            </tr>
+   
+    </tbody>
+</table>
+

@@ -49,4 +49,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+       name: "taskdetails",
+       pattern: "Home/TaskDetails/{taskId}",
+       defaults: new { controller = "Home", action = "TaskDetails" });
+
 app.Run();

@@ -1,24 +1,60 @@
 ﻿@{
-    ViewData["Title"] = "Управление задачами";
+    ViewData["Title"] = "Поток задач";
 }
 
 
-<h1>Управление задачами</h1>
+<h1>Поток задач</h1>
+<br />
+<br />
+@if (User.IsInRole("User"))
+{
+    <div class="row">
+        @foreach (var status in ViewBag.Statuses)
+        {
 
+            <div class="col">
+                <h3>@status.Statusname</h3>
+                @{
+                    var userTasks = ((IEnumerable<TaskFlow.Task>)ViewBag.Tasks).Where(t => t.AssignedtoNavigation != null && t.AssignedtoNavigation.Userid == int.Parse(User.FindFirst("UserId").Value));
+                }
+                @foreach (TaskFlow.Task task in userTasks.Where(t => t.Statusid == status.Statusid))
+                {
+                    <div>
+                        <h4><a href="@Url.Action("TaskDetails", new { taskId = task.Taskid })">@task.Title (@task.PriorityNavigation.Priorityname)</a></h4>
+                        <form method="post" action="@Url.Action("ChangeTaskStatus", new { taskId = task.Taskid })">
+                            <select name="newStatus">
+                                @foreach (var availableStatus in ViewBag.Statuses)
+                                {
+                                    <option value="@availableStatus.Statusid" selected="@(availableStatus.Statusid == task.Statusid)">@availableStatus.Statusname</option>
+                                }
+                            </select>
+                            <button type="submit">Изменить статус</button>
+                        </form>
+                    </div>
+                }
 
-<div class="row">
-    @foreach (var status in ViewBag.Statuses)
-    {
-        
- <div class="col">
-            <h3>@status.Statusname</h3>
-            @foreach (var task in ((IEnumerable<TaskFlow.Task>)ViewBag.Tasks).Where(t => t.Statusid == status.Statusid))
-            {
-                <div>
-                    <h4>@task.Title</h4>
-                </div>
-            }
-       
-        </div>
-    }
-</div>
+            </div>
+        }
+    </div>
+
+}
+else
+{
+    <div class="row">
+        @foreach (var status in ViewBag.Statuses)
+        {
+
+            <div class="col">
+                <h3>@status.Statusname</h3>
+
+                @foreach (TaskFlow.Task task in ((IEnumerable<TaskFlow.Task>)ViewBag.Tasks).Where(t => t.Statusid == status.Statusid))
+                {
+                    <div>
+                        <h4><a href="@Url.Action("TaskDetails", new { taskId = task.Taskid })">@task.Title (@task.PriorityNavigation.Priorityname)</a></h4>
+                    </div>
+                }
+
+            </div>
+        }
+    </div>
+}
