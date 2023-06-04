@@ -1,13 +1,13 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Управление задачами";
 }
 
 <h1>Управление задачами</h1>
+
 <br />
 <br />
 
-<table>
+<table class="task-table">
     <thead>
         <tr>
             <th>Заголовок</th>
@@ -17,6 +17,7 @@
             <th>Исполнитель</th>
             <th>Категория</th>
             <th>Дата создания</th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
@@ -31,16 +32,15 @@
                     <textarea name="Description">@task.Description</textarea>
                 </td>
                 <td>
-                  <select name="Statusid">
-                    @foreach (var status in ViewBag.Statuses)
-                    {
-                    <option value="@status.Statusid" selected="@(status.Statusid == task.Statusid)">@status.Statusname</option>
-                    }
-                </select>
-
+                    <select name="Statusid" class="form-control">
+                        @foreach (var status in ViewBag.Statuses)
+                        {
+                            <option value="@status.Statusid" selected="@(status.Statusid == task.Statusid)">@status.Statusname</option>
+                        }
+                    </select>
                 </td>
                 <td>
-                    <select name="Priorityid">
+                    <select name="Priorityid" class="form-control">
                         @foreach (var priority in ViewBag.Priorities)
                         {
                             <option value="@priority.Priorityid" selected="@(priority.Priorityid == task.Priority)">@priority.Priorityname</option>
@@ -48,7 +48,7 @@
                     </select>
                 </td>
                 <td>
-                    <select name="UserId">
+                    <select name="UserId" class="form-control">
                         @foreach (var user in ViewBag.Users)
                         {
                             <option value="@user.Userid" selected="@(user.Userid == task.Assignedto)">@user.Username</option>
@@ -56,7 +56,7 @@
                     </select>
                 </td>
                 <td>
-                    <select name="CategoryId">
+                    <select name="CategoryId" class="form-control">
                         @foreach (var category in ViewBag.Сategories)
                         {
                             <option value="@category.Categoryid" selected="@(category.Categoryid == task.Categoryid)">@category.Categoryname</option>
@@ -67,15 +67,16 @@
                     @task.Createdat.ToString("dd.MM.yyyy")
                 </td>
                 <td>
-                    <button class="btn-save" data-task-id="@task.Taskid">Сохранить</button>
+                    <button class="btn-save btn btn-primary" data-task-id="@task.Taskid">Сохранить</button>
                 </td>
                 <td>
-                    <button class="btn-delete" data-task-id="@task.Taskid">Удалить</button>
+                    <button class="btn-delete btn btn-danger" data-task-id="@task.Taskid">Удалить</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
 
 @section scripts {
     <script>
@@ -233,9 +234,9 @@
             <input type="date" name="Deadline" />
             }
             </td>*@
-                <td>
-                    <button class="btn-create">Сохранить</button>
-                </td>
+            <td>
+                <button class="btn-create btn btn-primary">Сохранить</button>
+            </td>
             </tr>
    
     </tbody>

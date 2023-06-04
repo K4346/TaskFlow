@@ -20,12 +20,21 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">TaskFlow</a>
+                        </li>    
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TaskBoard">TaskBoard</a>
                         </li>
                         @if (User.IsInRole("Analyst"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TasksManager">TasksManager</a>
+                            </li>
+                        } 
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminPanel">AdminPanel</a>
                             </li>
                         }
                     </ul>
@@ -35,18 +44,21 @@
     </header>
     @if (User.Identity.IsAuthenticated)
     {
-        <div class="user-info" style="text-align: center;">
-
+        <div class="user-info" style="text-align: center; float: right; margin-right: 20px; background-color: #f7f7f7; padding: 20px; border-radius: 5px;">
             <p>Вы вошли как: @User.Identity.Name</p>
             @if (User.IsInRole("Analyst"))
             {
                 <p>Роль: Аналитик</p>
             }
+            else if (User.IsInRole("Admin"))
+            {
+                <p>Роль: Администратор</p>
+            }
             else
             {
                 <p>Роль: Пользователь</p>
             }
-            <button id="logout">Разлогиниться</button>
+            <button id="logout" class="btn btn-primary">Разлогиниться</button>
         </div>
     }
 
@@ -63,7 +75,7 @@
                     "Accept": "application/json"
                 }
             });
-            location.reload();
+            window.location.href = "/Home/Login";
 
         }
 

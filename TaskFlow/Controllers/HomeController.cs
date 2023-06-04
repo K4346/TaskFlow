@@ -61,6 +61,30 @@ namespace TaskFlow.Controllers
 
             return View();
         }
+        public IActionResult TaskBoard()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            Console.WriteLine("id"+int.Parse(User.FindFirst("UserId").Value));
+
+            var users = db.Users.ToList();
+            
+            var tasks = db.Tasks.ToList().OrderByDescending(t => t.Priority).ToList();
+            foreach (var task in tasks)
+            {
+                Console.WriteLine(task.AssignedtoNavigation.Username);
+            }
+            List<Category> categories = db.Categories.Include(c => c.Tasks).ToList();
+            List<Status> statuses = db.Statuses.ToList();
+            List<Priority> priorities = db.Priorities.ToList();
+            ViewBag.Statuses = statuses;
+            ViewBag.Tasks = tasks;
+            ViewBag.Сategories = categories;
+
+            return View();
+        }
 
         public IActionResult TaskDetails(int taskId)
         {

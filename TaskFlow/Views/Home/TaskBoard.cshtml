@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Доска всех задач";
+}
+
+<h1>Доска всех задач</h1>
+<br /><br />
+
+    <div class="row">
+        @foreach (var status in ViewBag.Statuses)
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>@status.Statusname</h3>
+                    </div>
+                    <div class="card-body">
+                        @foreach (TaskFlow.Task task in ((IEnumerable<TaskFlow.Task>)ViewBag.Tasks).Where(t => t.Statusid == status.Statusid))
+                        {
+                            <div class="task-item">
+                                <h4><a href="@Url.Action("TaskDetails", new { taskId = task.Taskid })">@task.Title (@task.PriorityNavigation.Priorityname)</a></h4>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
