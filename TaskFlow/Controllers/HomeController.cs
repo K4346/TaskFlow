@@ -8,6 +8,9 @@ using System.Diagnostics;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using TaskFlow.Models;
+using Microsoft.AspNetCore.Hosting;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace TaskFlow.Controllers
 {
@@ -17,14 +20,17 @@ namespace TaskFlow.Controllers
 
         private readonly ILogger<HomeController> _logger;
         private readonly IDataProtector _protector;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         private readonly TaskFlowContext db;
 
-        public HomeController(ILogger<HomeController> logger, IDataProtectionProvider provider, TaskFlowContext _db)
+
+        public HomeController(ILogger<HomeController> logger, IDataProtectionProvider provider, TaskFlowContext _db, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             _protector = provider.CreateProtector("TaskFlow.Auth.v1");
             db = _db;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public IActionResult Login()
@@ -61,6 +67,109 @@ namespace TaskFlow.Controllers
 
             return View();
         }
+
+
+        public IActionResult Profile()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            var users = db.Users.ToList();
+            User? user = users.FirstOrDefault(u => Decrypt(u.Username) == User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+  
+            if (user.Image == null || user.Image == "")
+            {
+                ViewBag.ImagePath = null;
+            }
+            else {
+                string img = "~/Avatars/" + user.Image;
+                Console.WriteLine(img);
+                ViewBag.ImagePath = img;
+            }
+            ViewBag.Email = user.Email;
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult Profile(IFormFile avatar)
+        {
+            if (avatar != null && avatar.Length > 0)
+            {
+                var users = db.Users.ToList();
+                User? user = users.FirstOrDefault(u => Decrypt(u.Username) == User.Identity.Name);
+                try
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatar.FileName);
+                    string imagePath0 = Path.Combine(_hostingEnvironment.WebRootPath, "Avatars", fileName);
+
+                    using (var image = Image.Load(avatar.OpenReadStream()))
+                    {
+                        int targetWidth = 100; 
+                        image.Mutate(x => x.Resize(targetWidth, 0));
+                    
+                        using (var stream = new FileStream(imagePath0, FileMode.Create))
+                        {
+                            if (user.Image != null) {
+                                string lastImg = Path.Combine(_hostingEnvironment.WebRootPath, "Avatars", user.Image);
+                                if (System.IO.File.Exists(lastImg))
+                                {
+                                    System.IO.File.Delete(lastImg);
+                                }
+                            }
+                           
+                                image.Save(stream, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                        }
+                    }
+                    Console.WriteLine(fileName);
+                    user.Image = fileName;
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                  
+                }
+            }
+
+            return RedirectToAction("Profile","Home");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult DeleteImage()
+        {
+            Console.WriteLine("DeleteImage");
+
+            var users = db.Users.ToList();
+            User? user = users.FirstOrDefault(u => Decrypt(u.Username) == User.Identity.Name);
+            try
+            {
+                string imagePath0 = Path.Combine(_hostingEnvironment.WebRootPath, "Avatars", user.Image);
+                if (System.IO.File.Exists(imagePath0))
+                {
+                    System.IO.File.Delete(imagePath0);
+
+                    user.Image = null;
+                    db.SaveChanges();
+                 
+                }
+
+            }
+            catch (Exception ex)
+            {
+               
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+        [Authorize]
         public IActionResult TaskBoard()
         {
             if (!User.Identity.IsAuthenticated)
@@ -85,7 +194,7 @@ namespace TaskFlow.Controllers
 
             return View();
         }
-
+        [Authorize]
         public IActionResult TaskDetails(int taskId)
         {
 

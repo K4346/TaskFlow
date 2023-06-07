@@ -138,7 +138,9 @@ public partial class TaskFlowContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("username");
-
+            entity.Property(e => e.Image)
+            .HasMaxLength(255)
+            .HasColumnName("image");
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.Roleid)
                 .OnDelete(DeleteBehavior.ClientSetNull)

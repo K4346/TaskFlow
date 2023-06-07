@@ -23,5 +23,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>
 </Project>

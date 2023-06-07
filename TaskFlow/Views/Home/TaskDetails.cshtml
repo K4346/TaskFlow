@@ -24,7 +24,13 @@
 @if (@Model.AssignedtoNavigation != null)
 {
     <p>Назначено на:  @ViewBag.User.Username</p>
+
+    @if (!string.IsNullOrEmpty(@Model.AssignedtoNavigation.Image))
+    {
+        <img src="@Url.Content("~/Avatars/"+@Model.AssignedtoNavigation.Image)" />
+    }
 }
+
 @if (@Model.Category != null)
 {
     <p>Категория: @Model.Category.Categoryname</p>

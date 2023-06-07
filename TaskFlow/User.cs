@@ -15,6 +15,8 @@ public partial class User
 
     public int Roleid { get; set; }
 
+    public string? Image { get; set; }
+
     public virtual Role Role { get; set; } = null!;
 
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();

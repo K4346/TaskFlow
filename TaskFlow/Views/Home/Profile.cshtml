@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Профиль";
+}
+
+<h1>Профиль</h1>
+<br />
+<div>
+    @if (!string.IsNullOrEmpty(ViewBag.ImagePath))
+    {
+        <img src="@Url.Content(ViewBag.ImagePath)" alt="Изображение профиля" />
+    }
+    <p>Пользователь: @User.Identity.Name</p>
+    @if (User.IsInRole("Analyst"))
+    {
+        <p>Роль: Аналитик</p>
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        <p>Роль: Администратор</p>
+    }
+    else
+    {
+        <p>Роль: Пользователь</p>
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.Email)) {
+    <p>Почта: @ViewBag.Email</p>
+    }
+</div>
+<br />
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="avatar">Выберите изображение:</label>
+        <input type="file" name="avatar" id="avatar" class="form-control-file" accept="image/*">
+    </div>
+    <button type="submit" class="btn btn-primary">Загрузить</button>
+</form>
+    @if (!string.IsNullOrEmpty(ViewBag.ImagePath))
+    {
+    <form method="post" action="@Url.Action("DeleteImage", "Home")">
+        <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+
+    }
